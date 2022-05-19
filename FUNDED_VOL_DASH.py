@@ -1,5 +1,7 @@
 
 
+
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -99,7 +101,7 @@ fig_industry_sales = px.bar(
     sales_by_industry,
     x = "AMOUNT_FUNDED",
     y = sales_by_industry.index, orientation = "h",
-    title = "<b>Funded Volume by Month</b>",
+    title = "<b>Funded Volume by Industry</b>",
     color_discrete_sequence=["#0083B8"] * len(sales_by_industry),
     template="plotly_white",
 )
@@ -113,7 +115,7 @@ sales_by_month = (
     df_selection.groupby(by=["MONTH"]).sum()[["AMOUNT_FUNDED"]]
 )
 
-fig_monthly_sales = px.bar(
+fig_monthly_sales = px.line(
     sales_by_month,
     x=sales_by_month.index,
     y="AMOUNT_FUNDED",
@@ -122,23 +124,21 @@ fig_monthly_sales = px.bar(
     template="plotly_white",
 )
 fig_monthly_sales.update_layout(
-    xaxis=dict(tickmode="linear"),
+    xaxis=dict(tickmode="linear",showgrid=False, linewidth=1, ticks='outside'),
     plot_bgcolor="rgba(0,0,0,0)",
-    yaxis=(dict(showgrid=False)),
+    yaxis=(dict(showgrid=False,zeroline=False)),
 )
+fig_monthly_sales.update_yaxes(range=[0,250000000])
 
 # COUNTRY SALES
 sales_by_country = (
     df_selection.groupby(by=["COUNTRY"]).sum()[["AMOUNT_FUNDED"]].sort_values(by="AMOUNT_FUNDED")
 )
 
-fig_country_sales = px.bar(
-    sales_by_country,
-    x = "AMOUNT_FUNDED",
-    y = sales_by_country.index, orientation = "h",
-    title = "<b>Funded Volume by Geography</b>",
-    color_discrete_sequence=["#0083B8"] * len(sales_by_country),
-    template="plotly_white",
+fig_country_sales = px.pie(
+    df_selection, names=sales_by_country.index, values=sales_by_country["AMOUNT_FUNDED"],
+    hole=.5,
+    title="<b>Funded Volume by Geography</b>",
 )
 fig_country_sales.update_layout(
     plot_bgcolor="rgba(0,0,0,0)",
